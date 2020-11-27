@@ -1,0 +1,1849 @@
+I"΄<h1 id="计算机算法设计与分析">计算机算法设计与分析</h1>
+
+<h2 id="第二章-递归与分治策略">第二章 递归与分治策略</h2>
+
+<h3 id="21-递归的概念">2.1 递归的概念</h3>
+
+<ul>
+  <li>
+    <p>递归算法：一个直接或间接地调用自身的算法</p>
+  </li>
+  <li>
+    <p>递归函数：使用函数自身给出定义的函数</p>
+  </li>
+  <li>
+    <p>递归方程：对于递归算法，一般可把时间代价表示为一个递归方程</p>
+  </li>
+  <li>
+    <p>解递归方程最常用的方法是进行递归扩展
+<strong>阶乘函数</strong></p>
+    <ol>
+      <li><u>边界条件</u></li>
+      <li><u>递归关系</u></li>
+    </ol>
+  </li>
+</ul>
+
+\[n!=\begin{cases} 1,n=1\\ n(n-1)!,n&gt;1\end{cases}\]
+
+<p><strong>Fibonacci数列</strong>
+\(F(n)=\begin{cases} 1,n=0\\ 1,n=1\\F(n-1)+F(n-2),n&gt;1\end{cases}\)</p>
+
+<p><strong>==初始条件==和==递归方程==是递归函数的两个要素</strong></p>
+
+<p><strong>Ackerman函数</strong>
+\(\begin{cases} A(1,0)=2\\ A(0,m)=1,m&gt;=0\\A(n,0)=n+2,n&gt;=2\\A(n,m)=A(A(n-1,m),m-1),n、m&gt;=1\end{cases}\)</p>
+
+<ul>
+  <li>Ackerman函数为<strong>双递归函数</strong></li>
+  <li>双递归函数：一个<strong>函数</strong>及它的<strong>一个变量</strong>由函数自身定义</li>
+  <li>A(n,m)的自变量m的每一个值都定义了一个单变量函数</li>
+</ul>
+
+<p><em>注：需推一遍证明</em></p>
+
+<p><strong>排列问题</strong></p>
+
+<p>设R={r~1~,r~2~,…,r~n~}是要进行排列的n个元素，R~i~=R-{r~i~}。集合X中的元素的全排列记为Perm(X)。</p>
+
+<p>（r~i~)Perm(X)表示在全排列Perm(X)的每个排列前加上前缀r~i~得到的排列。</p>
+
+<p>R的全排列定义如下：</p>
+
+<p>​			当n=1时，Perm(R)=(r)，其中r是集合R中唯一的元素；</p>
+
+<p>​			当n&gt;1时，Perm(R)由(r~1~)Perm(R~1~)，(r~2~)Perm(R~2~)，…，(r~n~)Perm(R~n~)构成。</p>
+
+<p>为便于理解，以{1,2,3,4,5,6}为例：</p>
+
+<p>1 2 3 4 5 6 –&gt; <strong>1</strong> 2 3 4 5 6 –&gt; <strong>1</strong> <strong>2</strong> 3 4 5 6 –&gt; <strong>1 2 3</strong> 4 5 6 –&gt; <strong>1 2 3 4</strong> 5 6 –&gt; <strong>1 2 3 4 5</strong> 6</p>
+
+<p>​																							  –&gt; <strong>1 2 3 4</strong> 6 5 –&gt; <strong>1 2 3 4 6</strong> 5</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">Perm</span><span class="p">(</span><span class="n">Type</span> <span class="n">list</span><span class="p">[],</span><span class="kt">int</span> <span class="n">k</span><span class="p">,</span> <span class="kt">int</span> <span class="n">m</span><span class="p">){</span>			<span class="c1">//产生list[k:m]的所有排列</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="n">m</span><span class="p">){</span>									<span class="c1">//只剩下一个元素，到达递归的最底层</span>
+		<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">list</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span>										<span class="c1">//还有多个元素待排列，递归产生排列</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">k</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Swap</span><span class="p">(</span><span class="n">list</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">list</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            <span class="n">Perm</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">);</span>
+            <span class="n">Swap</span><span class="p">(</span><span class="n">list</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">list</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>				<span class="c1">//复位，保证所有元素都能依次做前缀</span>
+		<span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">Swap</span><span class="p">(</span><span class="n">Type</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">Type</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Type</span> <span class="n">temp</span><span class="o">=</span><span class="n">a</span><span class="p">;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>整数划分问题</strong></p>
+
+<p>将正整数n表示成一系列正整数之和，n=n~1~+n~2~+…+n~k~(n~1~≥n~2~≥…≥n~k~，k≥1)。</p>
+
+<p>正整数n的不同的划分个数称为正整数n的划分数，记为p(n)。以正整数6为例：</p>
+
+<p>6；</p>
+
+<p>5+1；</p>
+
+<p>4+2；4+1+1；</p>
+
+<p>3+3；3+2+1；3+1+1+1；</p>
+
+<p>2+2+2；2+2+1+1；2+1+1+1+1；</p>
+
+<p>1+1+1+1+1+1。</p>
+
+<p>将最大加数n~1~不大于m的划分个数记作q(n,m)，建立如下递归关系：
+\(q(n.m)=\begin{cases} 1,n=1、m=1\\q(n,n),n＜m\\1+q(n,n-1),n=m\\q(n,m-1)+q(n-m,m),n＞m＞1\end{cases}\)</p>
+
+<ol>
+  <li>q(n,1)=1，n≥1。当最大加数n~1~不大于1时，任何正整数n只有一种划分形式，即n=1+1+…+1</li>
+  <li>q(n,m)=q(n,n)，m≥n。最大加数n~1~不能大于n。</li>
+  <li>q(n,n)=1+q(n,n-1)。正整数n的划分由n~1~=n的划分和n~1~≤n-1的划分组成；n~1~=n时，划分仅有一种。</li>
+  <li>q(n,m-1)+q(n-m,m)，n&gt;m&gt;1。正整数n的最大加数n~1~不大于m的划分由n~1~=m的划分和n~1~≤m-1的划分组成。</li>
+</ol>
+
+<p><strong>Hanoi塔问题</strong></p>
+
+<p>设a，b，c是3个塔座。开始时，在塔座a上有一叠共n个圆盘，这些圆盘自下而上，由大到小地叠在一起。各圆盘从小到大编号为1，2，…，n，现要求将塔座a上的这一叠圆盘移到塔座b上，并仍按同样顺序叠置。在移动圆盘时遵守：</p>
+
+<ol>
+  <li>每次只移动1个圆盘</li>
+  <li>任何时刻都不允许将较大的圆盘压到较小的圆盘之上</li>
+  <li>在满足1和2的前提下，可将圆盘移动至a，b，c中任一塔座上</li>
+</ol>
+
+\[T(n)=\begin{cases}2T(n-1)+1,n&gt;1\\1,n=1\end{cases}\]
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">hanoi</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>				<span class="c1">//a上n个盘借助c移到b</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">n</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>						<span class="c1">//将第1个盘从a移到b</span>
+        <span class="n">move</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+    <span class="k">else</span><span class="p">{</span>
+		<span class="n">hanoi</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>			<span class="c1">//将第1至n-1个盘，从a移到c</span>
+        <span class="n">move</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>				<span class="c1">//将第n个盘从a移到b</span>
+        <span class="n">hanoi</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="p">);</span>			<span class="c1">//将第1至n-1个盘从c移到b</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>使用这种递归调用的关键在于建立<strong>递归调用工作栈</strong>。</p>
+
+<p>递归程序逐层调用需要分配存储空间，一旦某一层被启用，就要为之开辟新的空间。当一层执行完毕，释放相应空间，退到上一层。</p>
+
+<p><strong>递归优点</strong>：结构清晰，可读性强</p>
+
+<p><strong>递归缺点</strong>：递归算法的运行效率较低，无论是耗费的计算时间还是占用的存储空间都比非递归算法要多</p>
+
+<p><strong>解决方法</strong>：在递归算法中消除递归调用，使其转化为非递归算法。可采用一个用户定义的栈来模拟系统的递归调用工作栈。</p>
+
+<h3 id="22-分治策略">2.2 分治策略</h3>
+
+<p><strong>基本思想</strong></p>
+
+<p>将问题分解成若干个子问题，然后求解子问题。分治策略可以递归地进行，即子问题仍然可以用分值策略来处理，但最后的问题要非常基本而简单。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">divide</span><span class="o">-</span><span class="n">and</span><span class="o">-</span><span class="n">conquer</span><span class="p">(</span><span class="n">P</span><span class="p">){</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">|</span><span class="n">P</span><span class="o">|</span> <span class="o">&lt;=</span> <span class="n">n0</span><span class="p">)</span>									<span class="c1">//直接解决小规模问题</span>
+		<span class="n">adhoc</span><span class="p">(</span><span class="n">P</span><span class="p">);</span>
+	<span class="n">divide</span> <span class="n">P</span> <span class="n">into</span> <span class="n">smaller</span> <span class="n">subinstances</span> <span class="n">P1</span><span class="p">,</span><span class="n">P2</span><span class="p">,</span><span class="err">…</span><span class="p">,</span><span class="n">Pk</span>	<span class="c1">//分解问题</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">k</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>							<span class="c1">//递归解各子问题</span>
+        <span class="n">yi</span><span class="o">=</span><span class="n">divide</span><span class="o">-</span><span class="n">and</span><span class="o">-</span><span class="n">conquer</span><span class="p">(</span><span class="n">Pi</span><span class="p">);</span>					<span class="c1">//将格子问题的解合并为原问题的解</span>
+    <span class="k">return</span> <span class="n">merge</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="err">…</span><span class="p">,</span><span class="n">yk</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>代价分析</strong>
+\(\begin{cases}O(1),n=1\\kT(n/m)+f(n),n&gt;1\end{cases}\)
+$T(N)=aT(N/b)+N^k,a≥1,b&gt;1$
+\(T(n)=\begin{cases}O(N^t),t=log_ba,a&gt;b^k\\O(N^klogN),a=b^k\\O(N^k),a&lt;b^k\end{cases}\)</p>
+
+<h3 id="23-二分搜索技术">2.3 二分搜索技术</h3>
+
+<p>给定已按升序排好序的n个元素a[0:n-1]，现要在这n个元素中找出一特定元素x。</p>
+
+<ol>
+  <li>
+    <p>顺序搜索方法：最好时1次，最坏时n次</p>
+  </li>
+  <li>
+    <p>二分搜索方法</p>
+
+    <p><strong>基本思想</strong></p>
+
+    <p>将n个元素分成个数大致相同的两半，取a[n/2]与x作比较。</p>
+
+    <ul>
+      <li>如果x=a[n/2]，则找到x，算法终止；</li>
+      <li>如果x&lt;a[n/2]，则在数组a的左半部继续搜索x；</li>
+      <li>如果x&gt;a[n/2]，则在数组a的右半部继续搜索x。</li>
+    </ul>
+  </li>
+</ol>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kt">int</span> <span class="nf">BinarySearch</span><span class="p">(</span><span class="n">Type</span> <span class="n">a</span><span class="p">[],</span><span class="k">const</span> <span class="n">Type</span><span class="o">&amp;</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">l</span><span class="p">,</span> <span class="kt">int</span> <span class="n">r</span><span class="p">)</span>	<span class="c1">//l=0,r=n-1</span>
+<span class="p">{</span><span class="c1">//找到x时返回其在数组中的位置，否则返回-1</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">r</span> <span class="o">&gt;=</span> <span class="n">l</span><span class="p">){</span>
+        <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">l</span><span class="o">+</span><span class="n">r</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">x</span><span class="o">==</span><span class="n">a</span><span class="p">[</span><span class="n">m</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">m</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">&lt;</span><span class="n">a</span><span class="p">[</span><span class="n">m</span><span class="p">])</span>
+            <span class="n">r</span><span class="o">=</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="k">else</span>
+            <span class="n">l</span><span class="o">=</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+\[T（n）=\begin{cases}T(n/2)+O(1),n&gt;1\\O(1),n=1\end{cases}\]
+
+<p>求解：$T(n)=logn$</p>
+
+<p>复杂性：$O(logn)$</p>
+
+<h3 id="24-大整数的乘法">2.4 大整数的乘法</h3>
+
+<p>设X和Y都是n位二进制整数，计算它们的乘积$XY$。</p>
+
+<p>小学方法：$O(n^2)$</p>
+
+<p>将n位二进制整数$X$和$Y$分为2段，每段的长为n/2位，由此$X=A×2^t+B,t=n/2$，$Y=C×2^t+D,t=n/2$</p>
+
+<p>由此，$XY=(A×2^t+B)(C×2^t+D)=AC×2^t+(AD+BC)×2^t+BD,t=n/2$</p>
+
+<p>分治法：$XY=AC×2^n+((A-B)(D-C)+AC+BD)×2^t+BD,t=n/2$</p>
+
+<p>仅需做3次n/2位整数的乘法（AC、BD和(A-B)(D-C)）、6次加减法和2次移位。
+\(T（n）=\begin{cases}O(1),n=1\\3T(n/2)+O(n),n&gt;1\end{cases}\)
+易求得，其解为$T(n)=O(n^t),t=log3≈1.59$</p>
+
+<h3 id="25-strassen矩阵乘法">2.5 Strassen矩阵乘法</h3>
+
+<p>设$A$和$B$是两个$n×n$矩阵，乘积$AB$同样是一个$n×n$矩阵，$A$和$B$乘积矩阵$C$中元素定$c[i][j]$定义为
+\(C[i][j]=\sum_{k=1}^{n}{A[i][k]B[k][j]}\)
+传统方法：$O(n^3)$</p>
+
+<p>分治法：</p>
+
+<p>$\left[ \matrix{C[1][1] &amp; C[1][2]\C[2][1] &amp; C[2][2]} \right] = \left[ \matrix{A[1][1] &amp; A[1][2]\A[2][1] &amp; A[2][2]} \right]  \left[ \matrix{B[1][1] &amp; B[1][2]\B[2][1] &amp; B[2][2]} \right]$</p>
+
+<p>由此可得</p>
+
+<p>$C[1][1]=A[1][1]B[1][1]+A[1][2]B[2][1]$
+$C[1][2]=A[1][1]B[1][2]+A[1][2]B[2][2]$
+$C[2][1]=A[2][1]B[1][1]+A[2][2]B[2][1]$
+$C[2][2]=A[2][1]B[1][2]+A[2][2]B[2][2]$</p>
+
+<p>根据上述算法可得，计算2个n阶方阵的乘积转化为计算8个n/2阶方阵的乘积和4个n/2阶方阵的加法。</p>
+
+<p>故分治法的计算时间耗费$T(n)$应满足
+\(T（n）=\begin{cases}O(1),n=2\\8T(n/2)+O(n^2),n&gt;2\end{cases}\)
+$T(n)=O(n^3)$</p>
+
+<p>改进后变成了7次乘法（<em>详情见书上P20</em>），此时计算时间耗费$T(n)$满足
+\(T（n）=\begin{cases}O(1),n=2\\7T(n/2)+O(n^2),n&gt;2\end{cases}\)
+解此递归方程得$T(n)=O(n^t),t=log7≈2.81$</p>
+
+<h3 id="26-棋盘覆盖">2.6 棋盘覆盖</h3>
+
+<p>在一个$2^k×2^k$个方格组成的棋盘中，恰有一个方格与其它方格不同，称为特殊方格，且称该棋盘为一特殊棋盘。在该问题中，要用图示的4中不同形态的L型骨牌覆盖给定的特殊棋盘上除特殊方格以外的所有方格，且任何2个L型骨牌不得重叠覆盖。</p>
+
+<p><img src="https://raw.githubusercontent.com/SYQ0109/blogimage/main/img/20201120180341.PNG" alt="棋盘覆盖" /></p>
+
+<p>当k&gt;0时，将$2^k×2^k$个棋盘分割为4个2^k-1^×2^k-1^子棋盘。特殊方格必定位于4个较小子棋盘之一中，其余3个子棋盘中无特殊方格。为了将这3个无特殊方格的子棋盘转化为特殊棋盘，用一个L型骨牌覆盖这3个较小棋盘的会合处，将原问题转化为4个较小规模的棋盘覆盖问题，递归地使用这种分割，直至棋盘简化为1×1。</p>
+
+<p><img src="https://raw.githubusercontent.com/SYQ0109/blogimage/main/img/20201120180342.PNG" alt="棋盘覆盖2" /></p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+tr:棋盘左上角方格的行号			tc:棋盘左上角方格的列号
+dr:特殊方格所在的行号			 dc:特殊方格所在的列号
+size：size=2^k，棋盘规格为2^k×2^k
+*/</span>
+<span class="kt">void</span> <span class="nf">ChessBoard</span><span class="p">(</span><span class="kt">int</span> <span class="n">tr</span><span class="p">,</span><span class="kt">int</span> <span class="n">tc</span><span class="p">,</span><span class="kt">int</span> <span class="n">dr</span><span class="p">,</span><span class="kt">int</span> <span class="n">dc</span><span class="p">,</span><span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">size</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="n">tile</span><span class="o">++</span><span class="p">;</span>							<span class="c1">//L型骨牌号</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>								<span class="c1">//分割棋盘</span>
+    <span class="c1">//覆盖左上角子棋盘</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">dr</span><span class="o">&lt;</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span> <span class="o">&amp;&amp;</span> <span class="n">dc</span><span class="o">&lt;</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">)</span>					<span class="c1">//特殊方格在此棋盘中</span>
+        <span class="n">ChessBoard</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span><span class="n">tc</span><span class="p">,</span><span class="n">dr</span><span class="p">,</span><span class="n">dc</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>
+    <span class="k">else</span><span class="p">{</span>									<span class="c1">//此棋盘无特殊方格</span>
+		<span class="n">Board</span><span class="p">[</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="p">;</span>			<span class="c1">//用t号L型骨牌覆盖右下角</span>
+        <span class="n">ChessBoard</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span><span class="n">tc</span><span class="p">,</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>	<span class="c1">//覆盖其余方格</span>
+    <span class="p">}</span>
+    <span class="c1">//覆盖右上角子棋盘</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">dr</span><span class="o">&lt;</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span> <span class="o">&amp;&amp;</span> <span class="n">dc</span><span class="o">&gt;=</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">)</span>				<span class="c1">//特殊方格在此棋盘中</span>
+        <span class="n">ChessBoard</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">dr</span><span class="p">,</span><span class="n">dc</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>
+    <span class="k">else</span><span class="p">{</span>									<span class="c1">//此棋盘中无特殊方格</span>
+		<span class="n">Board</span><span class="p">[</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="p">;</span>				<span class="c1">//用t号L型骨牌覆盖左下角</span>
+        <span class="n">ChessBoard</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>	<span class="c1">//覆盖其余方格</span>
+    <span class="p">}</span>
+    <span class="c1">//覆盖左下角子棋盘</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">dr</span><span class="o">&gt;=</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span> <span class="o">&amp;&amp;</span> <span class="n">dc</span><span class="o">&lt;</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">ChessBoard</span><span class="p">(</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">tc</span><span class="p">,</span><span class="n">dr</span><span class="p">,</span><span class="n">dc</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>
+    <span class="k">else</span><span class="p">{</span>
+		<span class="n">Board</span><span class="p">[</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="p">][</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="p">;</span>
+        <span class="n">ChessBoard</span><span class="p">(</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="p">.</span><span class="n">tc</span><span class="p">,</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="c1">//覆盖右下角子棋盘</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">dr</span><span class="o">&gt;=</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span> <span class="o">&amp;&amp;</span> <span class="n">dc</span><span class="o">&gt;=</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">ChessBoard</span><span class="p">(</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">dr</span><span class="p">,</span><span class="n">dc</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>
+    <span class="k">else</span><span class="p">{</span>
+		<span class="n">Board</span><span class="p">[</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="p">][</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="p">;</span>
+        <span class="n">ChessBoard</span><span class="p">(</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">tr</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">tc</span><span class="o">+</span><span class="n">s</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>由此可得该时间复杂度的递推公式为
+\(T(n)=\begin{cases}4T(n/2)+O(1),n&gt;1\\O(1),n=1\end{cases}\)
+解得$T(n)=O(n^2)=O(4^k)$</p>
+
+<h3 id="27-合并排序">2.7 合并排序</h3>
+
+<ul>
+  <li>
+    <p>合并是将两个或多个有序表合并成一个有序表</p>
+  </li>
+  <li>
+    <p>二路合并：对两个已排好序的表进行合并</p>
+  </li>
+  <li>
+    <p>合并排序算法是用分治策略实现对n个元素进行排序的算法</p>
+  </li>
+</ul>
+
+<p><strong>基本思想</strong></p>
+
+<p>将待排序元素分成大小大致相同的两个子集合，分别对两个子集合进行排序，最终将排好序的子集合合并成要求的排好序的集合。</p>
+
+<p>将待排序集合一分为二，直至待排序集合只剩下一个元素为止，然后不断合并两个排好序的数组段。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">MergeSort</span><span class="p">(</span><span class="n">Type</span> <span class="n">a</span><span class="p">[],</span><span class="kt">int</span> <span class="n">left</span><span class="p">,</span><span class="kt">int</span> <span class="n">right</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">left</span><span class="o">&lt;</span><span class="n">right</span><span class="p">){</span>						<span class="c1">//至少有2个元素</span>
+		<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="o">+</span><span class="n">right</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>				<span class="c1">//取中点</span>
+        <span class="n">MergeSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">MergeSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">right</span><span class="p">);</span>
+        <span class="n">Merge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">right</span><span class="p">);</span>		<span class="c1">//合并到数组b</span>
+        <span class="n">Copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">left</span><span class="p">,</span><span class="n">right</span><span class="p">);</span>				<span class="c1">//复制回数组a</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在最坏情况下所需的计算时间$T(n)$满足
+\(T（n）=\begin{cases}O(1),n≤1\\2T(n/2)+O(n),n&gt;1\end{cases}\)
+解此递归方程可得$T(n)=O(nlogn)$</p>
+
+<p><strong>两组归并算法</strong></p>
+
+<p>作用：将两组有序文件合并成一组有序文件。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">Merge</span><span class="p">(</span><span class="n">Type</span> <span class="n">c</span><span class="p">[],</span><span class="n">Type</span> <span class="n">d</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">l</span><span class="p">,</span> <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">//c[l]到c[m]、c[m+1]到c[r]是两有序文件合并到d</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">l</span><span class="p">;</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">l</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">((</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">r</span><span class="p">)){</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">c</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>			<span class="c1">//从两个有序文件中的第一个记录中选出小的记录</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="o">++</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">];</span>
+        <span class="k">else</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="o">++</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">j</span><span class="o">++</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">)</span>					<span class="c1">//复制第一个文件的剩余记录</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="o">++</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">];</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">r</span><span class="p">)</span>					<span class="c1">//复制第二个文件的剩余记录</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="o">++</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">j</span><span class="o">++</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>无递归形式算法</strong></p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">MergeSort</span><span class="p">(</span><span class="n">Type</span> <span class="n">a</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Type</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Type</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">s</span><span class="o">&lt;</span><span class="n">n</span><span class="p">){</span>
+		<span class="n">MergePass</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">n</span><span class="p">);</span>		<span class="c1">//一趟归并结果放在b中</span>
+        <span class="n">s</span><span class="o">*=</span><span class="mi">2</span><span class="p">;</span>
+        <span class="n">MergePass</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">n</span><span class="p">);</span>		<span class="c1">//一趟归并结果放在a中</span>
+        <span class="n">s</span><span class="o">+=</span><span class="n">s</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">//调用两组归并算法，对数组进行一趟归并，将长为n的有序文件归并成长为2n的有序数组</span>
+<span class="kt">void</span> <span class="nf">MergePass</span><span class="p">(</span><span class="n">Type</span> <span class="n">x</span><span class="p">[],</span> <span class="n">Type</span> <span class="n">y</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">s</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span><span class="c1">//对x做一趟归并，结果放在y中</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">;</span>						<span class="c1">//n为本趟归并的有序子数组的长度</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="o">&lt;</span><span class="n">n</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Merge</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>		<span class="c1">//归并长度为s的两子数组</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">s</span><span class="o">&lt;</span><span class="n">n</span><span class="p">)</span>							<span class="c1">//剩下两个子数组，其中一个长度小于s</span>
+        <span class="n">Merge</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+    <span class="k">else</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>				<span class="c1">//将最后一个子数组复制到数组y中</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>最好情况：$T(n)=2T(n/2)+n/2$       $T(1)=0$ 		$T(2)=1$		$T(4)=4$</p>
+
+<p>最坏情况：$T(n)=2T(n/2)+n-1$       $T(1)=0$ 		$T(2)=1$		$T(4)=5$</p>
+
+<p>最坏时间复杂度：$O(nlogn)$</p>
+
+<p>最好时间复杂度：$O(nlogn)$</p>
+
+<p>平均时间复杂度：$O(nlogn)$</p>
+
+<p>辅助空间：$O(n)$</p>
+
+<h3 id="28-快速排序">2.8 快速排序</h3>
+
+<p><strong>基本思想</strong></p>
+
+<ol>
+  <li>
+    <p>设定基准值</p>
+
+    <p>使序列中的每个元素与基准值比较</p>
+  </li>
+  <li>
+    <p>基于基准值划分子序列</p>
+
+    <p>序列中比基准值小的放在基准值的左边，形成左部；大的放在右边，形成右部。</p>
+  </li>
+  <li>
+    <p>递归执行</p>
+
+    <p>左部和右部分别递归地执行上面的过程：选基准值，小的放在左边，大的放在右边，直到排序结束。</p>
+  </li>
+</ol>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+p:序列的左边界（最左元素下标）
+r:序列的右边界（最右元素下标）
+q:下一次左右两边子序列的分区位置
+*/</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">QuickSort</span><span class="p">(</span><span class="n">Type</span> <span class="n">a</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">p</span><span class="p">,</span> <span class="kt">int</span> <span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">&lt;</span><span class="n">r</span><span class="p">){</span>
+        <span class="kt">int</span> <span class="n">q</span> <span class="o">=</span> <span class="n">Partition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">r</span><span class="p">);</span>
+        <span class="n">QuickSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">q</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>				<span class="c1">//对左半段排序</span>
+        <span class="n">QuickSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">q</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">r</span><span class="p">);</span>				<span class="c1">//对右半段排序</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kt">int</span> <span class="nf">Partition</span><span class="p">(</span><span class="n">Type</span> <span class="n">a</span><span class="p">[],</span><span class="kt">int</span> <span class="n">p</span><span class="p">,</span><span class="kt">int</span> <span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">p</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+    <span class="n">Type</span> <span class="n">x</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>				<span class="c1">//设定基准值</span>
+    <span class="c1">//将小于x的元素交换到左边区域，将大于x的元素交换到右边区域</span>
+    <span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">){</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="o">++</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;</span><span class="n">x</span><span class="p">);</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="o">--</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;</span><span class="n">x</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;=</span><span class="n">j</span><span class="p">)</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="n">Swap</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+    <span class="p">}</span>
+    <span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+    <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">j</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/SYQ0109/blogimage/main/img/20201120180343.PNG" alt="快速排序" /></p>
+
+<p>最坏时间复杂度：$O(n^2)$</p>
+
+<p>最好/平均时间复杂度：$O(nlog_2n)$</p>
+
+<p>最坏辅助空间：$O(n)$</p>
+
+<p>最好/平均辅助空间：$O(log_2n)$</p>
+
+<p><strong>最坏情况</strong></p>
+
+<p>序列的n个元素已经排好序，每次划分都恰好把序列分为1，n-1两部分，那么总共需要n-1次划分，每次比较的次数分别为n-1，n-2，…，1，所以整个比较次数约为$n(n-1)/2$~$n^2/2$
+\(T(n)=\begin{cases}O(1),n≤1\\T(n-1)+O(n),n&gt;1\end{cases}\)
+求解递归方程可得$T(n)=O(n^2)$，相应的，n-1次划分形成的子序列共需要$O(n)$辅助空间</p>
+
+<p><strong>最好情况</strong></p>
+
+<p>每次划分所取的基准都恰好为序列中值，可将序列从中间均衡划分为等长子序列，因此需要log~2~n次划分即可完成排序。
+\(T(n)=\begin{cases}O(1),n≤1\\2T(n/2)+O(n),n&gt;1\end{cases}\)
+求解递归方程可得$T(n)=O(nlog_2n)$，形成的子序列共需要$O(log_2n)$辅助空间。</p>
+
+<p><strong>平均情况</strong></p>
+
+<p>设分划的数x=a[p]在最后排序的第k位，第1轮比较n-1次，前有k-1个元素，后有n-k个元素。</p>
+
+<p>==快速排序是不稳定的排序算法==</p>
+
+<p>通过修改算法partition，可以设计采用随机选择策略的快速排序算法，在快速排序算法的每一次partition中，可在a[p:r]中随机选出一个元素作为划分基准，从概率角度使得划分的期望达到对称效果。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kt">int</span> <span class="nf">RandomizedPartition</span><span class="p">(</span><span class="n">Type</span> <span class="n">a</span><span class="p">[],</span><span class="kt">int</span> <span class="n">p</span><span class="p">,</span> <span class="kt">int</span> <span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">r</span><span class="p">);</span>
+    <span class="n">Swap</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="n">Partition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">r</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="29-线性时间选择">2.9 线性时间选择</h3>
+
+<p>给定线性序集中n个元素和一个整数k（1≤k≤n），要求找出这n个元素中第k小的元素，即如果将这个元素依其线性序排列时，排在第k个位置的元素即为要找的元素。</p>
+
+<p><strong>复杂性是O(n^2^)随机化算法</strong></p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="n">Type</span> <span class="nf">RandomizedSelect</span><span class="p">(</span><span class="n">Type</span> <span class="n">a</span><span class="p">[],</span><span class="kt">int</span> <span class="n">p</span><span class="p">,</span> <span class="kt">int</span> <span class="n">r</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">==</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">RandomizedPartition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">r</span><span class="p">);</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">k</span><span class="o">&lt;=</span><span class="n">j</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">RandomizedSelect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">);</span>
+    <span class="k">else</span>
+        <span class="k">return</span> <span class="n">RandomizedSelect</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">k</span><span class="o">-</span><span class="n">j</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>算法时间复杂性：$O(n)$</p>
+
+<p>按以下步骤找到满足要求的划分标准：</p>
+
+<ol>
+  <li>将n个输入元素划分成[n/5]个组，每组5个元素，除可能有一个组不是5个元素外。用任意一种排序算法，将每组中的元素排好序，并取出每组的中位数，共[n/5]个。</li>
+  <li>递归调用Select找出这[n/5]个元素的中位数。如果[n/5]是偶数，就找它的两个中位数中较大的一个。</li>
+</ol>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="n">Type</span> <span class="nf">Select</span><span class="p">(</span><span class="n">Type</span> <span class="n">a</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">p</span><span class="p">,</span> <span class="kt">int</span> <span class="n">r</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">p</span><span class="o">&lt;</span><span class="n">cn</span><span class="p">)</span>
+        <span class="err">用简单的排序算法对数组</span><span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="o">:</span><span class="n">r</span><span class="p">]</span><span class="err">排序</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="o">+</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">p</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">//将a[p+5*i]至a[p+5*i+4]的第3小元素与a[p+i]交换位置</span>
+        <span class="n">Type</span> <span class="n">x</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">p</span><span class="o">+</span><span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">p</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span><span class="p">,(</span><span class="n">r</span><span class="o">-</span><span class="n">p</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Partition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">x</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">&lt;=</span><span class="n">j</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Select</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">);</span>
+        <span class="k">else</span>
+            <span class="k">return</span> <span class="n">Select</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">k</span><span class="o">-</span><span class="n">j</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>关于$T(n)$的递归式
+\(T(n)≤\begin{cases}T(\frac{1}{5}n)+T(\frac{3}{4}n)+cn,n&gt;&gt;5\\cn,n≤5\end{cases}\)</p>
+
+<h3 id="210-最接近点对问题">2.10 最接近点对问题</h3>
+
+<p>给定平面上$n$个点，找其中的一对点，使得在$n$个点组成的所有点对中，该点对间的距离最小。</p>
+
+<p>将所给的平面上$n$个点的集合$S$分成两个子集$S_1$和$S_2$，每个子集中约有n/2个点，然后在每个子集中递归地求其最接近的点对。</p>
+
+<p><strong>一维点集S</strong></p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="nf">Cpair</span><span class="p">(</span><span class="n">S</span><span class="p">,</span><span class="n">d</span><span class="p">){</span>
+	<span class="n">n</span> <span class="o">=</span> <span class="o">|</span><span class="n">S</span><span class="o">|</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">n</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">){</span>
+        <span class="n">d</span><span class="o">=</span><span class="err">∞</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">S</span><span class="err">中各点坐标的中位数</span><span class="p">;</span>
+    <span class="err">构造</span><span class="n">S1</span><span class="err">和</span><span class="n">S2</span><span class="p">;</span>					<span class="c1">//S1={x∈S|x&lt;=m},S2={x∈S|x&gt;m}</span>
+    <span class="n">Cpair</span><span class="p">(</span><span class="n">S1</span><span class="p">,</span><span class="n">d1</span><span class="p">);</span>
+    <span class="n">Cpair</span><span class="p">(</span><span class="n">S2</span><span class="p">,</span><span class="n">d2</span><span class="p">);</span>
+    <span class="n">p</span><span class="o">=</span><span class="n">max</span><span class="p">(</span><span class="n">S1</span><span class="p">);</span>
+    <span class="n">q</span><span class="o">=</span><span class="n">min</span><span class="p">(</span><span class="n">S2</span><span class="p">);</span>
+    <span class="n">d</span><span class="o">=</span><span class="n">min</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="n">d2</span><span class="p">,</span><span class="n">q</span><span class="o">-</span><span class="n">p</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>算法耗费的计算时间$T(n)$满足递归方程
+\(T(n)=\begin{cases}2T(n/2)+O(n),n&gt;4\\O(1),n=4\end{cases}\)
+求得$T(n)=O(nlogn)$</p>
+
+<p><strong>二维点集</strong></p>
+
+<p>S={p~1~,p~2~,…,p~n~}</p>
+
+<p>作一条垂直线$l:x=m$将平面分为两部分，设(p,q)为S的最接近点对情况：</p>
+
+<ul>
+  <li>p,q∈S~1~</li>
+  <li>p,q∈S~2~</li>
+  <li>p∈S~1~，q∈S~2~
+    <ul>
+      <li>p∈S~1~，q∈S~2~的情形</li>
+      <li>P~1~、P~2~有稀疏 性质：对P~1~中任意一点p，在P~2~中最多只有6个S中的点使与p的距离不超过d（<em>鸽舍原理</em>）</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="nf">Cpair2</span><span class="p">(</span><span class="n">S</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">n</span><span class="o">=|</span><span class="n">S</span><span class="o">|</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">n</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">){</span><span class="n">d</span><span class="o">=</span><span class="err">∞</span><span class="p">;</span><span class="k">return</span> <span class="nb">false</span><span class="p">;}</span>
+    <span class="n">m</span><span class="o">=</span><span class="n">S</span><span class="err">中各点</span><span class="n">x</span><span class="err">间坐标的中位数</span><span class="p">;</span>
+    <span class="err">构造</span><span class="n">S1</span><span class="err">和</span><span class="n">S2</span><span class="err">；</span>
+    <span class="c1">//S1={x∈S|x&lt;=m},S2={x∈S|x&gt;m}</span>
+    <span class="n">Cpair2</span><span class="p">(</span><span class="n">S1</span><span class="p">,</span><span class="n">d1</span><span class="p">);</span>
+    <span class="n">Cpair2</span><span class="p">(</span><span class="n">S2</span><span class="p">,</span><span class="n">d2</span><span class="p">);</span>
+    <span class="n">dm</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="n">d2</span><span class="p">);</span>
+    <span class="err">设</span><span class="n">P1</span><span class="err">是</span><span class="n">S1</span><span class="err">中距垂直分割线</span><span class="n">l</span><span class="err">的距离在</span><span class="n">dm</span><span class="err">之内的所有点组成的集合</span><span class="p">;</span>
+    <span class="n">P2</span><span class="err">是</span><span class="n">S2</span><span class="err">中距分割线</span><span class="n">l</span><span class="err">的距离在</span><span class="n">dm</span><span class="err">之内所有点组成的集合</span><span class="p">;</span>
+    <span class="err">将</span><span class="n">P1</span><span class="err">和</span><span class="n">P2</span><span class="err">中点依其</span><span class="n">y</span><span class="err">坐标值排序</span><span class="p">;</span>
+    <span class="err">并设</span><span class="n">X</span><span class="err">和</span><span class="n">Y</span><span class="err">是相应的已排好序的点列</span><span class="p">;</span>
+    <span class="err">通过扫描</span><span class="n">X</span><span class="err">以及对于</span><span class="n">X</span><span class="err">中每个点检查</span><span class="n">Y</span><span class="err">中与其距离在</span><span class="n">dm</span><span class="err">之内的所有点</span><span class="p">(</span><span class="err">最多</span><span class="mi">6</span><span class="err">个</span><span class="p">)</span><span class="err">可以完成合并</span><span class="p">;</span>
+    <span class="err">当</span><span class="n">X</span><span class="err">中的扫描指针逐次向上移动时，</span><span class="n">Y</span><span class="err">中的扫描指针可在宽为</span><span class="mi">2</span><span class="n">dm</span><span class="err">的一个区间内移动</span><span class="p">;</span>
+    <span class="err">设</span><span class="n">dl</span><span class="err">是按这种扫描方式找到的点对间的最小距离</span><span class="p">;</span>
+    <span class="n">d</span><span class="o">=</span><span class="n">min</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span><span class="n">dl</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>计算时间$T(n)$满足递归方程
+\(T(n)=\begin{cases}2T(n/2)+O(n),n&gt;4\\O(1),n≤4\end{cases}\)
+可解得$T(n)=O(nlogn)$</p>
+
+<h3 id="211-循环赛日程表">2.11 循环赛日程表</h3>
+
+<p>设有$n=2^k$个运动员要进行网球循环赛。现要设计一个满足以下要求的比赛日程表：</p>
+
+<ol>
+  <li>每个选手必须与其他n-1个选手各赛一次</li>
+  <li>每个选手一天只能赛一次</li>
+  <li>循环赛一共进行n-1天</li>
+</ol>
+
+<p>分治策略：</p>
+
+<p>将所有选手对分为两组，n个选手的比赛日程表可通过为n/2个选手设计的比赛日程表来决定。</p>
+
+<p>递归地用这种一分为二的策略对选手进行分割，直到只剩下2个选手时，比赛日程表的制定就变得很简单，只需让这2个选手进行比赛即可。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">Table</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">,</span> <span class="kt">int</span> <span class="o">**</span><span class="n">a</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">k</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">n</span><span class="o">*=</span><span class="mi">2</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">s</span><span class="o">&lt;=</span><span class="n">k</span><span class="p">;</span><span class="n">s</span><span class="o">++</span><span class="p">){</span>
+		<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+			<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="o">*</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="n">m</span><span class="p">];</span>
+                <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="n">m</span><span class="p">]</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="o">*</span><span class="mi">2</span><span class="p">];</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">m</span><span class="o">*=</span><span class="mi">2</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="第三章-动态规划">第三章 动态规划</h2>
+
+<p><strong>基本思想</strong></p>
+
+<p>将待求解的问题分成若干子问题。先求解子问题，再结合这些子问题的解得到原问题的解。</p>
+
+<p><strong>与分治法的不同</strong></p>
+
+<p>适合用动态规划法求的子问题往往不是互相独立的。</p>
+
+<p><strong>设计动态规划算法的步骤</strong></p>
+
+<ol>
+  <li>
+    <p>找出最优解的性质，并刻画其结构特征</p>
+
+    <p>==<strong>最优子结构性质</strong>==：最优解包含着其子问题的最优解。</p>
+  </li>
+  <li>
+    <p>递归地定义最优值</p>
+  </li>
+  <li>
+    <p>以自底向上的方式计算最优值</p>
+  </li>
+  <li>
+    <p>根据计算最优值时得到的信息构造最优解</p>
+  </li>
+</ol>
+
+<h3 id="31-矩阵连乘问题">3.1 矩阵连乘问题</h3>
+
+<p><strong>问题叙述</strong></p>
+
+<p>给定n个矩阵$A_1$，$A_2$，……，$A_n$，其中A~1~与A~j+1~是可乘的，i=1,2,……，n-1，现要计算出这n个矩阵的连乘积$A_1 A_2 … A_n$。</p>
+
+<p>确定一种运算次序，使总的运算次数达到最少。</p>
+
+<p>A=(a~ij~)~m×k~，B=(b~ij~)~k×n~，C=(c~ij~)~m×n~</p>
+
+<p>计算：C有m×n个元素，需m×n×k次乘法，m×n×(k-1)次加法</p>
+
+<p>完全加括号的矩阵连乘积可递归地定义为：</p>
+
+<ol>
+  <li>单个矩阵是完全加括号的；</li>
+  <li>若矩阵链乘积A是完全加括号的，则A可表示为2个完全加括号的矩阵连乘积B和C的乘积并加括号，即A=(BC)</li>
+</ol>
+
+<p><strong>算法分析</strong></p>
+
+<ol>
+  <li>
+    <p>分析最优解的结构</p>
+
+    <p>记$A[i:j]$为A~i~A~i+!~…A~j~，记$m[i][j]$是计算A~i~A~i+!~…A~j~时的最少乘法次数，显然$A[i:i]=A_i$，$m[i][i]=0$</p>
+
+    <p>特征：计算$A[i:k]$和$A[k+1:j]$的次序是最优的。</p>
+  </li>
+  <li>
+    <p>建立递归关系</p>
+
+    <p>假定计算$A[1:n]$的一个最优次序在矩阵A~k~和A~k+1~之间将矩阵链断开，1≤k&lt;n</p>
+
+    <p>$m[1][n]=m[1][k]+m[k+1][n]+p_0p_kp_n$</p>
+
+    <p><em>一般情况</em></p>
+
+    <p>假定计算$A[i:j]$的一个最优次序在矩阵A~k~和A~k+1~之间将矩阵链断开，i≤k&lt;j</p>
+
+    <p>m[1] [n]=m[1] [k]+m[k+1] [n]+p~i-1~p~k~p~j~</p>
+
+    <p>一般递推关系：</p>
+
+    <p><img src="https://raw.githubusercontent.com/SYQ0109/blogimage/main/img/20201120180344.PNG" alt="矩阵连乘递推公式" style="zoom:50%;" /></p>
+  </li>
+  <li>
+    <p>计算最优值</p>
+
+    <p>不同子问题个数最多有${n}\choose{2}$+$n=\theta(n^2)$个。</p>
+
+    <p>依据递归式自底向上进行计算。在计算过程中保存已解决的子问题答案，每个子问题只计算一次。</p>
+
+    <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+r:矩阵序的长度
+p[][]：存放矩阵序列维度的数组
+m[][]：最优值数组
+s[][]：记录最优断开位置的数组
+*/</span>
+<span class="kt">void</span> <span class="nf">MatrixChain</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="o">**</span><span class="n">m</span><span class="p">){</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">t</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span><span class="n">r</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">r</span><span class="o">++</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="o">-</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+			<span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="n">r</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>			<span class="c1">//初始化</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="n">k</span><span class="o">&lt;</span><span class="n">j</span><span class="p">;</span><span class="n">k</span><span class="o">++</span><span class="p">){</span>
+                <span class="n">t</span><span class="o">=</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="o">&lt;</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+                    <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+
+    <p>计算时间上界为$O(n^3)$，空间为$O(n^2)$</p>
+  </li>
+  <li>
+    <p>构造最优解</p>
+
+    <p>引入分割点标记$s[i][j]$，确定加括号方式，构造最优解</p>
+
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">Traceback</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">,</span> <span class="kt">int</span> <span class="o">**</span><span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="n">j</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+    <span class="n">Traceback</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">s</span><span class="p">);</span>
+    <span class="n">Traceback</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Multiply A "</span><span class="o">&lt;&lt;</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="s">", "</span> <span class="o">&lt;&lt;</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">" and A "</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">" ,"</span> <span class="o">&lt;&lt;</span> <span class="n">j</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+    <h3 id="32-动态规划算法的基本要素">3.2 动态规划算法的基本要素</h3>
+  </li>
+</ol>
+
+<p><strong>算法目标</strong></p>
+
+<p>求解有某种最优性质的问题。它可能有许多可行解，希望找到具有最优值的解。</p>
+
+<p><strong>算法思想</strong></p>
+
+<ol>
+  <li>动态规划算法将待求解问题分解成若干子问题，先求解子问题</li>
+  <li>从这些子问题的解得到原问题的解。这些子问题往往不互相独立</li>
+  <li>分解时得到的子问题数目可能很多，有些子问题被重复计算了很多次</li>
+</ol>
+
+<p><strong>求解方法</strong></p>
+
+<ul>
+  <li>
+    <p>自底向上方式、自上而下方式</p>
+  </li>
+  <li>
+    <p>采用<strong>备忘录方法</strong>：求解过程中需保持已经解决的子问题的解，而在需要时再找出已求得的解，就可以避免大量的重复计算，节省时间。动态规划法用表记录所有已解的子问题的答案。不管该子问题以后是否会被用到，只要它被计算过，就将其结果填入表中。</p>
+  </li>
+</ul>
+
+<p><strong>动态规划中的概念、名词术语</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>概念、名词术语</th>
+      <th>解释</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>阶段</td>
+      <td>把问题分成几个相互联系的有顺序的几个环节</td>
+    </tr>
+    <tr>
+      <td>状态</td>
+      <td>某一阶段的触发位置称为状态。通常一个阶段包含若干状态。</td>
+    </tr>
+    <tr>
+      <td>决策</td>
+      <td>从某阶段的一个状态演变到下一阶段某状态的选择。<br />特点：前一阶段的终点是后一阶段的起点，前一阶段的决策影响后一阶段的状态。</td>
+    </tr>
+    <tr>
+      <td>策略</td>
+      <td>由考生到终点的全过程中，由每段决策组成的决策序列。</td>
+    </tr>
+    <tr>
+      <td>状态转移方程</td>
+      <td>描述由k阶段到k+1阶段状态的演变规律称为状态转移方程（用数学形式表达）</td>
+    </tr>
+    <tr>
+      <td>目标函数与最优化概念</td>
+      <td>目标函数是衡量多阶段决策过程优劣的准则。最优化概念是在一定条件下找到一个途径，按照题目具体性质所确定的运算以后，使全过程的总效益达到最优。</td>
+    </tr>
+    <tr>
+      <td>动态规划</td>
+      <td>在多阶段决策问题中，各阶段采取的决策依赖于目前状态，并引起状态的转移以求得最优化过程。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>最佳原理：==<strong>一个最优化策略的子策略总是最优的</strong>==</p>
+
+<p>动态规划的求解步骤：</p>
+
+<ol>
+  <li>找出最优解的性质，并刻画其结构特征</li>
+  <li>递归地定义最优值（写出动态规划方程）</li>
+  <li>以自底向上（或自顶向下）的方式计算出最优值</li>
+  <li>根据计算最优值得到的信息，构造一个最优解</li>
+</ol>
+
+<p>动态规划算法的有效性依赖于问题本身所具有的两个重要性质：<strong>最优子结构性质</strong>和<strong>子问题重叠性质</strong>。</p>
+
+<ol>
+  <li>
+    <p>最优子结构</p>
+
+    <p>当问题的最优解包含了其子问题的最优解时，称该问题具有最优子结构性质。</p>
+
+    <p>证明用反证法：</p>
+
+    <p>先假设由问题的最优解导出的子问题的解表示最优的，然后再设法证明在这个假设下可构造出一个比原问题最优解更好的解，从而导致矛盾。</p>
+  </li>
+  <li>
+    <p>重叠子问题</p>
+
+    <p>在用递归算法自顶向下解问题时，每次产生的子问题并不总是新问题，有些子问题被反复计算多次。这种性质称为子问题的重叠性质。</p>
+
+    <p>动态规划利用子问题的重叠性质，对每个子问题只解一次，并将解保存在一个表格中，在以后尽可能多利用这些子问题的解。</p>
+
+    <p>特征：不同的子问题个数随问题的大小呈多项式增长而非指数增长。</p>
+  </li>
+</ol>
+
+<p><strong>动态规划法与分治策略</strong></p>
+
+<p>共性：都通过子问题求解原问题</p>
+
+<p>方法：分治法是把一个规模为n的问题分成多个与原问题类型相同的较小的子问题，通过对子问题的求解，并把子问题的解合并起来，构造出整个问题的解；动态规划法先求子问题的解，通过求解子问题，构造原问题的解</p>
+
+<p>==差异==：</p>
+
+<ol>
+  <li>
+    <p><strong>独立性</strong></p>
+
+    <p>分治法各子问题互相独立，动态规划法的各子问题不独立</p>
+  </li>
+  <li>
+    <p><strong>子问题数目</strong></p>
+
+    <p>动态规划法中设计的子问题，不独立的有很多，而独立的应只有多项式级；</p>
+
+    <p>分治法设计的子问题数一般达指数级</p>
+  </li>
+  <li>
+    <p><strong>局部最优</strong></p>
+
+    <p>动态规划法把问题分成许多子问题，每个子问题的解都是局部最优；分治法未必考虑最优性</p>
+  </li>
+  <li>
+    <p><strong>备忘录方法</strong></p>
+
+    <p>动态规划法可采用备忘录方法</p>
+  </li>
+</ol>
+
+<h3 id="33-最长公共子序列">3.3 最长公共子序列</h3>
+
+<p><strong>概念</strong></p>
+
+<ol>
+  <li>子序列：若给定序列$X={x_1,x_2,…,x_m}$，则另一序列$Z={z_1,z_2,…,z_k}$是X的子序列，是指存在一个严格递增下标序列${i_1,i_2,…,i_k}$使得对于所有j=1,2,…,k有：z~j~=x~ij~。</li>
+  <li>公共子序列：给定两个序列X和Y，当另一序列Z既是X的子序列又是Y的子序列时，称Z是序列X和Y的公共子序列</li>
+</ol>
+
+<p>设序列$X={x_1,x_2,…,x_m}$和$Y={y_1,y_2,…,y_n}$的最长公共子序列为$Z={z_1,z_2,…,z_k}$，则</p>
+
+<ol>
+  <li>若$x_m=y_n$，则$z_k=x_m=y_n$，且Z~k-1~是X~m-1~和Y~n-1~的最长公共子序列</li>
+  <li>若$x_m≠y_n$且$z_k≠x_m$，则Z是X~m-1~和Y的最长公共子序列</li>
+  <li>若$x_m≠y_n$且$z_k≠y_n$，则Z是X和Y~n-1~的最长公共子序列</li>
+</ol>
+
+<p>当i=0或j=0时，空序列是$X_i$和$Y_j$的最长公共子序列，此时$c[i][j]=0$。</p>
+
+<p>其他情况下的递归关系：
+\(c[i][j]=\begin{cases}0,i=0、j=0\\c[i-1][j-1]+1,i、j＞0;x_i=y_j\\max(c[i][j-1],c[i-1][j]),i、j&gt;0;x_i≠y_j\end{cases}\)
+子问题空间中，总共有$\theta(mn)$个不同的子问题，用动态规划算法自底向上计算最优值能提高算法的效率。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+c[i][j]：存储Xi和Yj的最长公共子序列的长度
+b[i][j]：记录c[i][j]的值是由哪个子问题的解得到的
+*/</span>
+
+<span class="c1">//计算最优值</span>
+<span class="kt">void</span> <span class="nf">LCSLength</span><span class="p">(</span><span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">y</span><span class="p">,</span> <span class="kt">int</span> <span class="o">**</span><span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="o">**</span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">]){</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>					<span class="c1">//指↖</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]){</span>
+				<span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>					<span class="c1">//指↑</span>
+            <span class="p">}</span>
+            <span class="k">else</span><span class="p">{</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span>					<span class="c1">//指←</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">//构造最长公共子序列</span>
+<span class="kt">void</span> <span class="nf">LCS</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="o">**</span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="o">||</span> <span class="n">j</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">LCS</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">LCS</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+    <span class="k">else</span>
+        <span class="n">LCS</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="34-最大子段和">3.4 最大子段和</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>给定由n个整数组成的序列$a_1,a_2,a_3……,a_n$，求该序列形如$\sum{a_k}$的子段和的最大值。</p>
+
+<p>枚举：$O(n^3)$</p>
+
+<p>递推：$O(n^2)$</p>
+
+<p><strong>分治策略</strong></p>
+
+<p>将序列$a[1:n]$分为长度相等的两段$a[1:n/2]$和$a[n/2+1:n]$，分别求出这两段的最大子段和S~1~，S~2~</p>
+
+<p>$a[1:n]$的最大子段和S有三种可能：</p>
+
+<p>$S=S~1$，$S=S_2$或$S=\sum_{k=i}^{j}{a_k}$，$i≤n/2，n/2+1≤j$</p>
+
+<p>对于第三种情况只需求得S~1~中i到n/2最大子段和，S~2~中n/2+1到j最大子段和，二者相加S=S~1~’+S~2~’</p>
+
+<p>时间复杂度递推式：
+\(T(n)=\begin{cases}2T(n/2)+O(n),n&gt;C\\O(1),n≤C\end{cases}\)
+由上解得$T(n)=O(nlogn)$</p>
+
+<p><strong>动态规划</strong></p>
+
+<p>对$a[1:j]$，记$b[j]$，$1≤j≤n$</p>
+
+<p>$b[j]=max$~{1≤i≤j}~{$\sum_{k=i}^{j}{a_k}$}				以j为末尾位置的最大字段和</p>
+
+<p>$a[1:n]$的最大子段和$S=max$~{1≤j≤n}~{$b[j]$}，$b[j]=max${$b[j-1]+a[j],a[j]$}</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">MaxSum</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">a</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">sum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="n">b</span><span class="o">+=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="k">else</span> <span class="n">b</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="o">&gt;</span><span class="n">sum</span><span class="p">)</span> <span class="n">sum</span><span class="o">=</span><span class="n">b</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>复杂性：$O(n)$</p>
+
+<p><strong>推广</strong></p>
+
+<p><strong>最大子矩阵和问题</strong></p>
+
+<p>给定一个m行n列的整数矩阵A，试求矩阵A的一个子矩阵，使其各元素之和为最大。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">MaxSum2</span><span class="p">(</span><span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="o">**</span><span class="n">a</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">sum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="o">*</span><span class="n">b</span><span class="o">=</span><span class="k">new</span> <span class="kt">int</span> <span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+		<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">k</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">];</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">){</span>
+			<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">];</span>
+            <span class="kt">int</span> <span class="n">max</span><span class="o">=</span><span class="n">MaxSum</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">max</span><span class="o">&gt;</span><span class="n">sum</span><span class="p">)</span> <span class="n">sum</span><span class="o">=</span><span class="n">max</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>复杂性：$O(m^2n)$</p>
+
+<h3 id="35-凸多边形最优三角剖分">3.5 凸多边形最优三角剖分</h3>
+
+<p><strong>凸多边形</strong>：用多边形顶点的逆时针序列表示凸多边形，即P={v~0~，v~1~，…，v~n-1~}表示具有n条边的凸多边形。</p>
+
+<p><strong>弦</strong>：若v~i~与v~j~是多边形上不相邻的2个顶点，则线段v~i~v~j~称为多边形的一条弦。弦将多边形分割成2个多边形{v~i~，v~i+1~，…，v~j~}和{v~j~，v~j+1~，…，v~i~}</p>
+
+<p>凸多边形最优三角剖分：给定凸多边形P，以及定义在由多边形的边和弦组成的三角形上的权函数w。确定该凸多边形的三角剖分，使得该三角剖分中诸三角形上权之和为最小。</p>
+
+<p><strong>递归结构</strong></p>
+
+<p>定义$t[i][j]$，1≤i＜j≤n为凸子多边形{v~i-1~，v~i~，…，v~j~}的最优三角剖分所对应的权函数值，即其最优值。</p>
+
+<p>$t[i][j]=t[i][k]+t[k+1][j]+$(△v~i-1~v~k~v~j~权值)</p>
+
+<p><strong>递归定义</strong></p>
+
+<p><img src="https://raw.githubusercontent.com/SYQ0109/blogimage/main/img/20201120180345.PNG" alt="凸多边形最优三角剖分递归" style="zoom:50%;" /></p>
+
+<p>时间复杂性：$O(n^3)$	空间复杂性：$O(n^2)$</p>
+
+<h3 id="39-流水作业调度">3.9 流水作业调度</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>n个作业{1,2,…,n}要在由2台机器M1和M2组成的流水线上完成加工。每个作业加工的顺序都是现在M1上加工，然后在M2上加工M1和M2加工作业i所需的时间分别为a~i~和b~i~。</p>
+
+<p>流水作业调度问题：确定这n个作业的最优加工顺序，使得从第一个作业在机器M1上开始加工，到最后一个作业在机器M2上加工完成所需的时间最少。</p>
+
+<p><strong>算法分析</strong></p>
+
+<p>一个最优调度应使机器M1没有空闲时间且机器M2的空闲时间最少。</p>
+
+<p>机器M2的两种情况：</p>
+
+<ol>
+  <li>机器空闲</li>
+  <li>作业积压</li>
+</ol>
+
+<p>设机器M1开始加工S中作业时，机器M2还在加工其他作业，要等时间t后才可利用，完成S中作业所需的最短时间记为$T(S,t)$。</p>
+
+<p>由此，该问题变为求最优值为$T(J,0)$</p>
+
+<p><strong>最优子结构性质</strong></p>
+
+<p>设π是所给n个流水作业的一个最优调度，即已排好作业调度：π(1)，π(2)，…，π(n)，其中π(i)∈{1,2,…,n}</p>
+
+<p>设机器M1开始加工J中第一个作业J~π(1)~时，机器M2可能在等待，它所需的加工时间为a~π(1)~+T‘，其中T’是在机器M2的等待时间为b~π(1)~时，安排作业J~π(2)~，…，J~π(n)~所需的时间，这是最好的时间。</p>
+
+<p>记S=J-{J~π(1)~}，则可证明：T’=T(S,b~π(1)~)</p>
+
+<p><strong>递归关系</strong></p>
+
+<p>可得T{J,0}=min~{1≤i≤n}~{a~i~+T(J-{J~i~},b~i~)}</p>
+
+<p>T(S,t)=min~{Ji∈S}~{a~i~+T(S-{J~i~},b~i~+max(t-a~i~,0))}</p>
+
+<p><strong>Johnson不等式</strong></p>
+
+<p>设π是作业集S在机器M2的等待时间为t时的任一最优调度。若π(1)=i，π(2)=j，由动态规划递归式可得：
+T(S,t)=a~i~+T(S-{J~i~},b~i~+max{t-a~i~,0})=a~i~+a~j~+T(S-{J~i~,J~j~},t~ij~)</p>
+
+<p>t~ij~=b~j~+b~i~-a~j~-a~i~+max{t,a~i~+a~j~-b~i~,a~i~}</p>
+
+<p>若作业J~i~和J~j~满足min{a~j~,b~i~}≥min{a~i~,b~j~}，称做J~i~和J~j~满足Johnson不等式。</p>
+
+<p>所有满足Johnson法则的调度均为最优调度。</p>
+
+<p>最坏情况下算法所需的计算时间为$O(nlogn)$，所需空间为$O(n)$</p>
+
+<h3 id="310-0-1背包问题">3.10 0-1背包问题</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>给定n个物体和一个背包，物体i的重量为w~i~，价值为v~i~(i=1,2,……,n)，背包能容纳的物体重量为c，要从这n个物体中选出若干件放入背包，使得放入物体的总重量小于等于c，而总价值达到最大。</p>
+
+<p>如果用x~i~=1表示将第i件物体放入背包，用x~i~=0表示未放入，则问题变为选择一组x~i~(i=0,1)使得$w_x=\sum_{i=l}^{n}{w_ix_i}≤c$，$v_x=\sum_{i=l}^{n}{v_ix_i}$，并且达到最大</p>
+
+<p><strong>递归关系</strong></p>
+
+<p>$m(i,j)$是背包容量为j，可选择物品为$i,i+1,…,n$时0-1背包问题的最优值。</p>
+
+<p>由0-1背包问题的最优子结构性质，有计算$m(i,j)$的递归式：
+\(m(i,j)=\begin{cases}max[m(i+1,j),m(i+1,j-w_i)+v_i],j≥w_i\\m(i+1,j),0≤j＜w_i\end{cases}\)</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">Knapsack</span><span class="p">(</span><span class="n">Type</span> <span class="n">v</span><span class="p">,</span><span class="kt">int</span> <span class="n">w</span><span class="p">,</span><span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">Type</span><span class="o">**</span> <span class="n">m</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">jMax</span><span class="o">=</span><span class="n">min</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">jMax</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>			<span class="c1">//初始化</span>
+        <span class="n">m</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">w</span><span class="p">[</span><span class="n">n</span><span class="p">];</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">c</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>			<span class="c1">//价值</span>
+        <span class="n">m</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">--</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">jMax</span><span class="o">=</span><span class="n">min</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">jMax</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>		<span class="c1">//确定放得下</span>
+            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">c</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>		<span class="c1">//j&gt;=wi</span>
+            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">max</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">+</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+	<span class="p">}</span>
+    <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">c</span><span class="p">]</span><span class="o">=</span><span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">c</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="o">&gt;=</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">c</span><span class="p">]</span><span class="o">=</span><span class="n">max</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">c</span><span class="p">],</span><span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">c</span><span class="o">-</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">+</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="p">}</span>
+<span class="c1">//构造最优解</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Type</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">Traceback</span><span class="p">(</span><span class="n">Type</span> <span class="o">**</span><span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">x</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">c</span><span class="p">]</span><span class="o">==</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">c</span><span class="p">])</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+        <span class="k">else</span><span class="p">{</span>
+			<span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+            <span class="n">c</span><span class="o">-=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="p">}</span>
+	<span class="p">}</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">c</span><span class="p">])</span><span class="o">?</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>时间复杂性：$O(nc)$</p>
+
+<h2 id="第四章-贪心算法">第四章 贪心算法</h2>
+
+<p>贪心策略不从整体最优考虑，而总是某种意义上是局部最优的方面做出选择。</p>
+
+<p>==<strong>贪心策略总是作出在当前看来最好的选择</strong>==</p>
+
+<h3 id="41-活动安排问题">4.1 活动安排问题</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>有n个活动的集合E={1,2,……,n}，其中每个活动都要求使用同一资源，而在同一时间内只有一个活动能使用这一资源。</p>
+
+<p>每个活动i都有一个要求使用该资源的起始时间s~i~和一个结束时间f~i~，且s~i~＜f~i~。</p>
+
+<p>若选择了活动i，则它在半开时间区间[s~i~,f~i~)内占用资源。若区间[s~i~,f~i~)与区间[s~j~,f~j~)不相交，则称活动i与活动j是相容的。</p>
+
+<p><strong>求解策略</strong></p>
+
+<p>从队列中每次总是选择具有最早完成时间的相容空间加入活动集合A中。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">GreedySelector</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="kt">int</span> <span class="n">s</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">f</span><span class="p">[],</span> <span class="kt">bool</span> <span class="n">A</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="nb">true</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="p">{</span>
+            <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nb">true</span><span class="p">;</span>
+            <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
+            <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+            <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">count</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>选择具有最早完成时间的相容活动加入集合A中，时间复杂性：$O(nlogn)$</p>
+
+<h3 id="42-贪心算法的基本要素">4.2 贪心算法的基本要素</h3>
+
+<ol>
+  <li>
+    <p>贪心选择性质</p>
+
+    <p>所求问题的<strong>整体最优解</strong>可以通过一系列<strong>局部最优</strong>的选择来达到。</p>
+  </li>
+  <li>
+    <p>最优子结构性质</p>
+
+    <p>当一个问题的最优解包含其子问题的最优解时，称此问题具有<strong>最优子结构性质</strong></p>
+  </li>
+</ol>
+
+<p><strong>问题具有贪心选择性质的证明方法</strong></p>
+
+<ol>
+  <li>明确所说的贪心选择策略S</li>
+  <li>按该贪心选择策略，可选择一个局部最优解，确定第一步选择（假定有一个最优解A）</li>
+  <li>考察问题的最优解A，并证明它的第一步必可通过贪心选择策略开始</li>
+</ol>
+
+<p><strong>贪心算法与动态规划算法的差异</strong></p>
+
+<ul>
+  <li>
+    <p>贪心选择</p>
+
+    <p>问题的整体最优解可以通过一系列局部最优的选择求得。</p>
+
+    <ul>
+      <li>通常自顶向下的方式进行，以迭代方式作出相继的贪心选择，每作一次贪心选择就将所求问题简化为规模更小的子问题。</li>
+    </ul>
+  </li>
+  <li>
+    <p>动态规划</p>
+
+    <p>每步选择依赖与相关子问题，待子问题求解后，才做出选择。</p>
+
+    <ul>
+      <li>通常以自底向上的方式解决各子问题。</li>
+    </ul>
+  </li>
+</ul>
+
+<p>共同点：</p>
+
+<ul>
+  <li>贪心算法和动态规划算法都要求问题具有最优子结构性质；</li>
+  <li>都通过求解一系列子问题的解求得原问题的解</li>
+</ul>
+
+<h3 id="43-最优装载">4.3 最优装载</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>有一批集装箱要装上一艘载重量为c的轮船。其中集装箱i的重量为w~i~。确定在装载体积不受限制的情况下，将尽可能多的集装箱装上轮船。</p>
+
+<p><strong>算法描述</strong></p>
+
+<p>用x~i~表示将第i件集装箱装入船，用x~i~=0表示未放入，则问题变为选择一组x~i~(i=0,1)</p>
+
+<p>最优装载问题可以用贪心算法求解。</p>
+
+<ol>
+  <li>确定贪心选择策略：采用重量最轻者先装，可产生最优装载问题的最优解。</li>
+  <li>步骤：
+    <ul>
+      <li>预备：先对货物按重量从轻到重排序</li>
+      <li>策略：依次按最轻者装入</li>
+    </ul>
+  </li>
+</ol>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">Loading</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">[],</span><span class="kt">int</span> <span class="n">w</span><span class="p">[],</span><span class="kt">int</span> <span class="n">c</span><span class="p">,</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="o">*</span><span class="n">t</span><span class="o">=</span><span class="k">new</span> <span class="kt">int</span> <span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">Sort</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">n</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="o">&amp;&amp;</span><span class="n">w</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">&lt;=</span><span class="n">c</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+		<span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+        <span class="n">c</span><span class="o">-=</span><span class="n">w</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>算法所需的计算时间为$O(nlogn)$</p>
+
+<h3 id="44-哈夫曼编码">4.4 哈夫曼编码</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>一个文件含100,000个字符，共有6个字母a,b,c,d,e,f出现，频率为：45,13,12,16,9,5，用0、1穿表示字母对文件进行压缩。</p>
+
+<p>哈夫曼编码特点：给出现频率高的字符较短的0、1编码，出现频率较低的字符以较长的编码，可以大大缩短总码长。</p>
+
+<p><strong>编码方法</strong></p>
+
+<ol>
+  <li>
+    <p>前缀码</p>
+
+    <p>对每一个字符规定一个0、1串作为其代码，并要求任一字符的代码都不是其他字符代码的前缀。</p>
+  </li>
+  <li>
+    <p>译码方式：取前缀码</p>
+  </li>
+  <li>
+    <p>编码方法：构造二叉树</p>
+  </li>
+</ol>
+
+<p>表示<strong>最优前缀码</strong>的二叉树总是一棵完全二叉树，即树中任一非叶结点都有2个儿子结点。</p>
+
+<p><strong>平均码长</strong>定义为
+\(B(T)=\sum_{c∈C}f(c)d_T(c)\)
+$C$为字符集，$f(c)$为字符$c$在文件中出现的频率，$d_T(c)$为深度</p>
+
+<p>使平均码长达到最小的前缀码编码方程称为给定编码字符集$C$的最优前缀码</p>
+
+<p><strong>构造哈夫曼编码</strong></p>
+
+<p>哈夫曼算法以自底向上的方式构造表示最优前缀码的二叉树T。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>算法思想：算法以$</td>
+      <td>C</td>
+      <td>$个叶结点开始，执行$</td>
+      <td>C</td>
+      <td>-1$次的“合并”运算后产生最终所要求的树T。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>哈夫曼树</strong></p>
+
+<p>算法步骤：</p>
+
+<ol>
+  <li>用$C$中每一字符$c$的频率$f(c)$初始化一个队列Q</li>
+  <li>对优先队列Q用贪心选择：取出具有最小频率的2棵树x,y，并将这2棵树合并为新树z，其频率为合并的2棵树的频率之和，并将新树插入优先队列Q。</li>
+  <li>作n-1次类似的合并。优先队列中只剩下一棵树，即所要求的的树T。</li>
+</ol>
+
+<p><strong>哈夫曼树的实现方式与复杂性</strong></p>
+
+<ul>
+  <li>用最小堆实现优先队列Q</li>
+  <li>初始化优先队列需要$O(n)$计算时间，n-1次的合并总共需要$O(nlogn)$计算时间</li>
+  <li>n个字符的哈夫曼算法的计算时间为$O(nlogn)$</li>
+</ul>
+
+<h3 id="45-单源最短路径">4.5 单源最短路径</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>给定带权有向图G=(V,E)，其中每条边的权是非负实数。给定V中的一个顶点v，称为源。计算从源v到所有其他各顶点u的最短路长度d[u]。</p>
+
+<p><strong>Dijkstra算法基本思想</strong></p>
+
+<p>设置顶点集合S并不断地作贪心选择来扩充这个集合。u∈S，当且仅当从源v到该顶点u的最短路径长度已知。</p>
+
+<h2 id="第五章-回溯法">第五章 回溯法</h2>
+
+<h3 id="51-回溯法的算法框架">5.1 回溯法的算法框架</h3>
+
+<p><strong>问题的解空间</strong></p>
+
+<ol>
+  <li>解向量：问题的解用向量表示$(x_1,x_2,…,x_k)$，其中$k≤n$，$n$为问题的规模</li>
+  <li>约束条件
+    <ul>
+      <li>显式约束：对分量$x_i$的取值的明显限定</li>
+      <li>隐式约束：为满足问题的解而对分量施加的约束</li>
+    </ul>
+  </li>
+  <li>
+    <p>解空间：对于问题的一个实例，解向量满足显式约束条件的所有多元组，构成了该实例的一个解空间。</p>
+  </li>
+  <li>状态空间树：用于形象描述解空间的树</li>
+  <li>目标函数与最优解
+    <ul>
+      <li>目标函数：衡量问题解的“优劣”标准</li>
+      <li>最优解：使目标函数取极（大/小）值的解</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>回溯法</strong></p>
+
+<ul>
+  <li>
+    <p>基本方法：利用限界函数来避免生成那些实际上不可能产生所需解的活结点，以减少问题的计算量，避免无效搜索</p>
+  </li>
+  <li>限界函数：用于剪枝
+    <ol>
+      <li>约束函数：某个满足条件的表达式或关系式</li>
+      <li>限界函数：某个函数表达式或关系式</li>
+    </ol>
+  </li>
+  <li>
+    <p>回溯法：具有限界函数的深度优先搜索方法</p>
+  </li>
+  <li><strong>基本思想</strong>
+    <ol>
+      <li>以深度优先方式搜索解空间</li>
+      <li>开始时，根节点为活结点，也是当前的扩展结点</li>
+      <li>对扩展结点，寻找儿子结点：若找到新结点，新结点称为活结点并成为扩展结点，转3；若找不到新结点，当前结点成为死结点，并回退到最近的一个活结点，使它成为扩展结点，转3</li>
+      <li>搜索继续进行，直到找到所求的解或解空间中已无活结点时为止</li>
+    </ol>
+  </li>
+  <li><strong>解题步骤</strong>
+    <ol>
+      <li>针对所给问题，定义问题的解空间</li>
+      <li>确定合适的解空间结构</li>
+      <li>以深度优先方式搜索解空间，并在搜索过程中用剪枝函数避免无效搜索，直到找到所求的解或解空间中已无活结点时为止</li>
+    </ol>
+  </li>
+</ul>
+
+<p><strong>子集树与排列树</strong></p>
+
+<p><img src="https://raw.githubusercontent.com/SYQ0109/blogimage/main/img/20201120180346.png" alt="image-20201115182300827" style="zoom:50%;" /><img src="https://raw.githubusercontent.com/SYQ0109/blogimage/main/img/20201120180347.PNG" alt="排列树" style="zoom:50%;" /></p>
+
+<p>左图为子集树，遍历子集树需计算$O(2^n)$；右图为排列树，遍历排列树需要$O(n!)$</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//legal(t)为Constraint(t)&amp;&amp;Bound(t)</span>
+<span class="c1">//子集树</span>
+<span class="kt">void</span> <span class="nf">backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span> <span class="n">output</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+    <span class="k">else</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
+    		<span class="k">if</span><span class="p">(</span><span class="n">legal</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                <span class="n">backtrack</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">//排列树</span>
+<span class="kt">void</span> <span class="nf">backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">t</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span> <span class="n">output</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+    <span class="k">else</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">t</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">swap</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">legal</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                <span class="n">backtrack</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+            <span class="n">swap</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+		<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="52-装载问题">5.2 装载问题</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>有一批共n个集装箱要装上2艘载重量分别为$c_1$和$c_2$的轮船，其中集装箱i的重量为$w_i$，且$\sum_{i=1}^{n}{w_i≤c_1+c_2}$</p>
+
+<p><strong>最优装载方案</strong></p>
+
+<ol>
+  <li>首先将第一艘轮船尽可能装满
+    <ul>
+      <li>将第一艘轮船尽可能装满等价于选取全体集装箱集合的一个子集，使该子集中集装箱重量之和最接近$c_1$</li>
+    </ul>
+  </li>
+  <li>将剩余的集装箱装上第二艘轮船</li>
+</ol>
+
+<p>装载问题等价于特殊的0-1背包问题</p>
+
+<p><strong>装载问题的回溯法</strong></p>
+
+<ul>
+  <li>解空间：子集树，完全二叉树</li>
+  <li>设定解向量：$(x_1,x_2,…,x_n)$</li>
+  <li>约束条件
+    <ol>
+      <li>显式约束：$x_i=0,1(i=1,2,…,n)$</li>
+      <li>隐式约束：无</li>
+    </ol>
+  </li>
+  <li>约束函数（整体）：$\sum^{n}_{i=1}{w_ix_i}≤c_1$</li>
+</ul>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+cw:当前载重量
+bestw:当前最优载重量
+r:剩余集装箱的重量，限界函数:cw+r&gt;bestw
+*/</span>
+<span class="c1">//求最优值</span>
+<span class="kt">void</span> <span class="nf">backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>						<span class="c1">//搜索第i层结点</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span>									<span class="c1">//到达叶结点</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">cw</span><span class="o">&gt;</span><span class="n">bestw</span><span class="p">)</span> <span class="n">bestw</span><span class="o">=</span><span class="n">cw</span><span class="p">;</span>				<span class="c1">//修正最优值</span>
+        <span class="k">return</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="n">r</span><span class="o">-=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">cw</span><span class="o">+</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">c</span><span class="p">)</span>							<span class="c1">//搜索左子树</span>
+    <span class="p">{</span>
+        <span class="n">cw</span><span class="o">+=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+        <span class="n">cw</span><span class="o">-=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>							<span class="c1">//回退</span>
+	<span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">cw</span><span class="o">+</span><span class="n">r</span><span class="o">&gt;</span><span class="n">bestw</span><span class="p">)</span>							<span class="c1">//搜索右子树</span>
+    	<span class="n">backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>	
+    <span class="n">r</span><span class="o">+=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>为了构造最优解，需在算法中记录与当前最优值相对应的当前最优解。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+cw:当前载重量
+x:当前解
+bestx:当前最优解
+bestw:当前最优载重量
+r:剩余集装箱的重量，限界函数:cw+r&gt;bestw
+*/</span>
+<span class="kt">void</span> <span class="nf">backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">cw</span><span class="o">&gt;</span><span class="n">bestw</span><span class="p">)</span>
+            <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+                <span class="n">bestx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>			<span class="c1">//记录路径</span>
+        	<span class="n">bestw</span><span class="o">=</span><span class="n">cw</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="n">r</span><span class="o">-=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">cw</span><span class="o">+</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">c</span><span class="p">){</span>						<span class="c1">//搜索左子树</span>
+		<span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+        <span class="n">cw</span><span class="o">+=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+        <span class="n">cw</span><span class="o">-=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">cw</span><span class="o">+</span><span class="n">r</span><span class="o">&gt;</span><span class="n">bestw</span><span class="p">){</span>						<span class="c1">//搜索右子树</span>
+		<span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+        <span class="n">backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">r</span><span class="o">+=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>迭代回溯</strong></p>
+
+<p><em>注：代码见书P 130</em></p>
+
+<ul>
+  <li>
+    <p>将回溯法表示成非递归的形式</p>
+  </li>
+  <li>
+    <p>所需计算时间仍为$O(2^n)$</p>
+  </li>
+  <li>
+    <p>优化：修改递归回溯程序，使所需的计算时间仍为$O(2^n)$</p>
+  </li>
+</ul>
+
+<h3 id="53-批处理作业调度">5.3 批处理作业调度</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>给定n个作业的集合$J=${$J_1,J_2,…,J_n$}，每个作业须由机器M1处理，再由机器M2处理。作业$J_i$需机器j的处理时间为$t_{ji}$.所有作业在机器M2上完成处理的时间和称为该作业调度的完成时间和。
+\(f=\sum_{i=1}^{n}{F_{2i}}\)
+<strong>算法设计</strong></p>
+
+<p>设x[1…n]是n个作业，解空间为排列树</p>
+
+<p>$f1=f1+m[x[j]][1]$</p>
+
+<p>$f2[i]=((f2[i-1]&gt;f1)?f2[i-1]:f1)+m[x[j]][2]$</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+f1:机器1完成处理时间
+f：完成时间和
+bestf:当前最优值
+m:各作业所需的处理时间
+x:当前作业调度
+bestx:当前最优调度
+f2:机器2完成处理
+*/</span>
+<span class="kt">void</span> <span class="nf">backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="n">n</span><span class="p">){</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+            <span class="n">bestx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+        <span class="n">bestf</span><span class="o">=</span><span class="n">f</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">){</span>
+			<span class="n">f1</span><span class="o">+=</span><span class="n">M</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]][</span><span class="mi">1</span><span class="p">];</span>
+            <span class="n">f2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">((</span><span class="n">f2</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">f1</span><span class="p">)</span><span class="o">?</span><span class="n">f2</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">:</span><span class="n">f1</span><span class="p">)</span><span class="o">+</span><span class="n">M</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]][</span><span class="mi">2</span><span class="p">];</span>
+            <span class="n">f</span><span class="o">+=</span><span class="n">f2</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">f</span><span class="o">&lt;</span><span class="n">bestf</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">Swap</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+                <span class="n">backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+                <span class="n">Swap</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+			<span class="p">}</span>
+            <span class="n">f1</span><span class="o">-=</span><span class="n">M</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]][</span><span class="mi">1</span><span class="p">];</span>
+            <span class="n">f</span><span class="o">-=</span><span class="n">f2</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="55-n后问题">5.5 n后问题</h3>
+
+<p><strong>问题描述</strong></p>
+
+<p>在n×n格的棋盘上放置彼此不受攻击的n个皇后，任何两个皇后不放在同一行或同一列或同一斜线上</p>
+
+<p><strong>算法分析</strong></p>
+
+<ol>
+  <li>设定解向量：$(x_1,x_2,…,x_n)$，采用排列树</li>
+  <li>约束条件
+    <ul>
+      <li>显式约束：$x_i=1,2,…,n(i=1,2,…,n)$</li>
+      <li>隐式约束
+        <ul>
+          <li>不同列：$x_i≠x_j$</li>
+          <li>
+            <table>
+              <tbody>
+                <tr>
+                  <td>不处于同一正、反对角线：$</td>
+                  <td>i-j</td>
+                  <td>≠</td>
+                  <td>x_i-x_j</td>
+                  <td>$</td>
+                </tr>
+              </tbody>
+            </table>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+n:皇后个数
+x:当前解
+sum:当前已找到的可行方案书
+*/</span>
+
+<span class="c1">//约束函数</span>
+<span class="kt">bool</span> <span class="nf">place</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">k</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">){</span>
+        <span class="k">if</span><span class="p">((</span><span class="n">abs</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="n">j</span><span class="p">)</span><span class="o">==</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span> <span class="o">||</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">//递归回溯</span>
+<span class="kt">void</span> <span class="nf">backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">t</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span> <span class="n">sum</span><span class="o">++</span><span class="p">;</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">place</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                <span class="n">backtrack</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>迭代回溯</strong></p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">N</span><span class="o">-</span><span class="n">queen</span><span class="p">(</span><span class="n">n</span><span class="p">){</span>
+	<span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">k</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">){</span>
+		<span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+        <span class="k">while</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">)</span><span class="o">&amp;&amp;!</span><span class="n">place</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="n">n</span><span class="p">)</span> <span class="n">sum</span><span class="o">++</span><span class="p">;</span>
+        	<span class="k">else</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+        		<span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+        <span class="k">else</span>
+            <span class="n">k</span><span class="o">--</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="56-0-1背包问题">5.6 0-1背包问题</h3>
+
+<p>解空间：子集树</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">double</span> <span class="nf">bound</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>						<span class="c1">//计算上界</span>
+<span class="p">{</span>
+    <span class="kt">double</span> <span class="n">cleft</span><span class="o">=</span><span class="n">c</span><span class="o">-</span><span class="n">cw</span><span class="p">;</span>					<span class="c1">//剩余容量</span>
+    <span class="kt">double</span> <span class="n">bnd</span><span class="o">=</span><span class="n">cp</span><span class="p">;</span>						<span class="c1">//cp:当前价值</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">cleft</span><span class="p">)</span>			<span class="c1">//以物品单位重量价值递减序装入物品</span>
+    <span class="p">{</span>
+        <span class="n">cleft</span><span class="o">-=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">bnd</span><span class="o">+=</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;</span><span class="n">cleft</span><span class="p">)</span>				<span class="c1">//背包有空隙时，装满背包</span>
+        <span class="n">bnd</span><span class="o">+=</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">cleft</span><span class="o">/</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="k">return</span> <span class="n">bnd</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//回溯程序</span>
+<span class="kt">void</span> <span class="nf">Backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">bestp</span><span class="o">=</span><span class="n">cp</span><span class="p">;</span>
+    	<span class="k">return</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">cw</span><span class="o">+</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">c</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cw</span><span class="o">+=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">cp</span><span class="o">+=</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">Backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+        <span class="n">cw</span><span class="o">-=</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">cp</span><span class="o">-=</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">bound</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">&gt;</span><span class="n">bestp</span><span class="p">)</span>
+        <span class="n">Backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="57-最大团问题">5.7 最大团问题</h3>
+
+<p><strong>算法分析</strong></p>
+
+<p>解空间：子集树</p>
+
+<p>限界函数：取cn+n-i，即有足够多的可选择顶点使得算法有可能在右子树中找到更大的团</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="n">n</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+            <span class="n">bestx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+        <span class="n">bestn</span><span class="o">=</span><span class="n">cn</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="kt">int</span> <span class="n">ok</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">i</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>				<span class="c1">//欲扩展节点i</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>			<span class="c1">//考察：i与前面的j是否相连</span>
+        <span class="p">{</span>
+            <span class="n">ok</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>						<span class="c1">//i与前面的j不相连，舍弃i</span>
+            <span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">ok</span><span class="p">)</span>							<span class="c1">//进入左子树</span>
+        <span class="p">{</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+            <span class="n">cn</span><span class="o">++</span><span class="p">;</span>
+            <span class="n">backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+            <span class="n">cn</span><span class="o">--</span><span class="p">;</span>
+		<span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">cn</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="n">i</span><span class="o">&gt;</span><span class="n">bestn</span><span class="p">)</span>				<span class="c1">//进入右子树</span>
+        <span class="p">{</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+            <span class="n">backtrack</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+        <span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="58-图的m着色问题">5.8 图的m着色问题</h3>
+
+<p><strong>算法分析</strong></p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">backtrack</span><span class="p">(</span><span class="kt">int</span> <span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">t</span><span class="o">&gt;</span><span class="n">n</span><span class="p">){</span><span class="n">sum</span><span class="o">++</span><span class="p">;</span><span class="err">输出解</span><span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">ok</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="n">backtrack</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="nf">ok</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+:ET
